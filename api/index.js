@@ -31,7 +31,7 @@ app.post('/register', async (req, res) => {
             password: bcrypt.hashSync(password, bcryptSalt),
         });
 
-        res.json({ userdoc });
+        res.json(userdoc );
     } catch (e) {
         res.status(422).json(e)
     }
@@ -42,7 +42,7 @@ app.post('/login', async (req, res) => {
     const { email, password } = req.body
     const UserDoc = await User.findOne({ email })
     if (UserDoc) {
-        const passOk = bcrypt.compareSync(password, UserDoc, password)
+        const passOk = bcrypt.compareSync(password, UserDoc.password)
         if (passOk) {
             res.json('passOk')
         } else {
