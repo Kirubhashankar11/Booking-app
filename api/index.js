@@ -10,25 +10,47 @@ const bcryptSalt = bcrypt.genSaltSync(10)
 
 app.use(express.json())
 app.use(cors({
-    credentials:true,
-    origin:'http://localhost:5173',
+    credentials: true,
+    origin: 'http://localhost:5173',
 }))
 
 mongoose.connect(process.env.MONGO_URL);
 
-app.get('/test', (req,res) => {
+app.get('/test', (req, res) => {
     res.json('test ok')
 });
 
-app.post('/register', async(req,res) => {
-    const {name,email,password} = req.body;
-    const userdoc = await User.create({
-        name,
-        email,
-        password:bcrypt.hashSync(password, bcryptSalt),
-    });
+app.post('/register', async (req, res) => {
+    const { name, email, password } = req.body;
 
-    res.json({userdoc});
+
+    try {
+        const userdoc = await User.create({
+            name,
+            email,
+            password: bcrypt.hashSync(password, bcryptSalt),
+        });
+
+        res.json({ userdoc });
+    } catch (e) {
+        res.status(422).json(e)
+    }
+
+})
+
+app.post('/login', async (req, res) => {
+    const { email, password } = req.body
+    const UserDoc = await User.findOne({ email })
+    if (UserDoc) {
+        const passOk = bcrypt.compareSync(password, UserDoc, password)
+        if (passOk) {
+            res.json('passOk')
+        } else {
+            res.status(422).json('pass not ok')
+        }
+    } else {
+        res.json('not found')
+    }
 })
 
 app.listen(4000);
