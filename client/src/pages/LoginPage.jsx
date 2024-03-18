@@ -7,7 +7,7 @@ import { UserContext } from "../userContext.jsx";
 export default function LoginPage() {
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
-    const [redirect, setRedirect] = useState('false')
+    const [redirect, setRedirect] = useState(false)
     const { setUser } = useContext(UserContext);
     async function handleLoginSubmit(ev) {
         ev.preventDefault();
